@@ -17,10 +17,6 @@ class MinikubeTests(unittest.TestCase):
         module.verify_nodes({"items": [{"metadata": {"labels": {"minikube.k8s.io/name": "test"}}}]})
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class MinikubeCleanupTests(unittest.TestCase):
     def fixture_module(self):
         spec = importlib.util.spec_from_file_location("minikube_fixture", Path(__file__).with_name("minikube.py"))
@@ -46,3 +42,7 @@ class MinikubeCleanupTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "kubectl create"):
                 m.main()
             self.assertEqual(run.call_args.args[0][3:5], ["delete", "namespace"])
+
+
+if __name__ == "__main__":
+    unittest.main()
