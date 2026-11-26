@@ -1,0 +1,1 @@
+terraform import polaris_table_grant.access '{"catalog":"warehouse","catalog_role":"iam_analysts","grant":{"type":"table","privilege":"TABLE_READ_DATA","namespace":["sales","region"],"tableName":"orders"}}'

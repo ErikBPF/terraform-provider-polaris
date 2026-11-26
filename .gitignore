@@ -1,0 +1,12 @@
+.env*
+.terraform/
+*.tfstate*
+*.tfplan
+*.log
+*.secrets.json
+bin/
+dist/
+.fixture/
+graphify-out/
+worktrees/
+__pycache__/

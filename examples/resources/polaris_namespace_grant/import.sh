@@ -1,0 +1,1 @@
+terraform import polaris_namespace_grant.access '{"catalog":"warehouse","catalog_role":"iam_analysts","grant":{"type":"namespace","privilege":"NAMESPACE_READ_PROPERTIES","namespace":["sales","region"]}}'
