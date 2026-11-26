@@ -54,6 +54,8 @@ def main():
                 'polaris.features."ALLOW_INSECURE_STORAGE_TYPES"=true',
                 "--env",
                 'polaris.features."SUPPORTED_CATALOG_STORAGE_TYPES"=["FILE"]',
+                "--env", 'polaris.features."ENABLE_SEMANTIC_MODELS"=true',
+                "--env", 'polaris.features."ALLOW_NAMESPACE_CUSTOM_LOCATION"=true',
                 "docker.io/apache/polaris:1.9.0",
             ]
         )
@@ -120,7 +122,7 @@ def main():
                 "-run",
                 "TestAcc",
                 "-count=1",
-                "-timeout=10m",
+                "-timeout=15m",
             ],
             env=env,
             check=False,
@@ -128,7 +130,7 @@ def main():
         if result.returncode:
             raise RuntimeError(f"Provider acceptance failed: exit {result.returncode}")
         print(
-            "PASS: eight resource lifecycles/imports, no-op, property updates, drift repair and destroy"
+            "PASS: IAM and asset lifecycles/imports, no-op, property updates, drift repair and nonpurging unregister"
         )
     finally:
         original_error = sys.exc_info()[0] is not None

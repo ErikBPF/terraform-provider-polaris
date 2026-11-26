@@ -81,6 +81,10 @@ func (c *client) bearer(ctx context.Context) (string, error) {
 }
 
 func (c *client) request(ctx context.Context, method, path string, input, output any, accepted ...int) (int, error) {
+	return c.apiRequest(ctx, method, "/api/management/v1"+path, input, output, accepted...)
+}
+
+func (c *client) apiRequest(ctx context.Context, method, path string, input, output any, accepted ...int) (int, error) {
 	token, err := c.bearer(ctx)
 	if err != nil {
 		return 0, err
@@ -93,7 +97,7 @@ func (c *client) request(ctx context.Context, method, path string, input, output
 		}
 		body = bytes.NewReader(encoded)
 	}
-	req, err := http.NewRequestWithContext(ctx, method, c.base+"/api/management/v1"+path, body)
+	req, err := http.NewRequestWithContext(ctx, method, c.base+path, body)
 	if err != nil {
 		return 0, fmt.Errorf("cannot build Polaris request")
 	}

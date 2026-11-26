@@ -1,0 +1,1 @@
+terraform import polaris_semantic_model_grant.example '{"catalog":"warehouse","catalog_role":"iam_analysts","grant":{"type":"semantic-model","privilege":"SEMANTIC_MODEL_READ","namespace":["sales"],"semanticModelName":"chosen"}}'

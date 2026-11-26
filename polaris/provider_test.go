@@ -13,8 +13,8 @@ func TestProviderSchema(t *testing.T) {
 	if err := p.InternalValidate(); err != nil {
 		t.Fatal(err)
 	}
-	if len(p.ResourcesMap) != 8 {
-		t.Fatalf("expected eight IAM resources, got %d", len(p.ResourcesMap))
+	if len(p.ResourcesMap) != 21 {
+		t.Fatalf("expected 21 resources, got %d", len(p.ResourcesMap))
 	}
 	for name, r := range p.ResourcesMap {
 		if r.Importer == nil {

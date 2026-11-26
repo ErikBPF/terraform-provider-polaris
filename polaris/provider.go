@@ -1,4 +1,4 @@
-// Package polaris manages the Polaris 1.9 IAM management API.
+// Package polaris manages Polaris 1.9 assets and group IAM.
 package polaris
 
 import (
@@ -33,6 +33,17 @@ func New(version string) func() *schema.Provider {
 				"polaris_namespace_grant":           resourceNamespaceGrant(),
 				"polaris_table_grant":               resourceTableGrant(),
 			},
+		}
+		for _, kind := range []string{"catalog", "namespace", "table", "table_registration", "view", "view_registration", "generic_table", "semantic_model", "policy"} {
+			p.ResourcesMap["polaris_"+kind] = assetResource(kind)
+		}
+		p.ResourcesMap["polaris_policy_attachment"] = policyAttachmentResource()
+		for _, kind := range []string{"view", "policy", "semantic_model"} {
+			p.ResourcesMap["polaris_"+kind+"_grant"] = grantResource(kind)
+		}
+		p.DataSourcesMap = map[string]*schema.Resource{}
+		for _, kind := range []string{"catalog", "namespace", "table", "view", "generic_table", "semantic_model", "policy"} {
+			p.DataSourcesMap["polaris_"+kind] = assetDataSource(kind)
 		}
 		p.ConfigureContextFunc = func(_ context.Context, d *schema.ResourceData) (any, diag.Diagnostics) {
 			c, err := newClient(text(d, "base_url"), text(d, "realm"), text(d, "token"), text(d, "client_id"), text(d, "client_secret"))

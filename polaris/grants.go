@@ -17,6 +17,9 @@ type grant struct {
 	Privilege string   `json:"privilege"`
 	Namespace []string `json:"namespace,omitempty"`
 	Table     string   `json:"tableName,omitempty"`
+	View      string   `json:"viewName,omitempty"`
+	Policy    string   `json:"policyName,omitempty"`
+	Model     string   `json:"semanticModelName,omitempty"`
 }
 
 type grantID struct {
@@ -26,6 +29,25 @@ type grantID struct {
 }
 
 func grantResource(kind string) *schema.Resource {
+	field := map[string]string{"table": "table_name", "view": "view_name", "policy": "policy_name", "semantic_model": "semantic_model_name"}[kind]
+	apiKind := kind
+	if kind == "semantic_model" {
+		apiKind = "semantic-model"
+	}
+	objectName := func(g grant) string {
+		switch kind {
+		case "table":
+			return g.Table
+		case "view":
+			return g.View
+		case "policy":
+			return g.Policy
+		case "semantic_model":
+			return g.Model
+		}
+		return ""
+	}
+
 	attributes := map[string]*schema.Schema{
 		"catalog":      nameSchema("Existing catalog name."),
 		"catalog_role": nameSchema("Catalog role receiving this privilege; direct identity grants are not supported."),
@@ -34,18 +56,25 @@ func grantResource(kind string) *schema.Resource {
 	if kind != "catalog" {
 		attributes["namespace"] = &schema.Schema{Type: schema.TypeList, Required: true, ForceNew: true, MinItems: 1, Elem: &schema.Schema{Type: schema.TypeString, ValidateFunc: validation.StringLenBetween(1, 256)}, Description: "Namespace path components; a literal dot remains part of its component."}
 	}
-	if kind == "table" {
-		attributes["table_name"] = nameSchema("Existing table name.")
+	if field != "" {
+		attributes[field] = nameSchema("Existing object name.")
 	}
 	value := func(d *schema.ResourceData) grant {
-		g := grant{Type: kind, Privilege: text(d, "privilege")}
+		g := grant{Type: apiKind, Privilege: text(d, "privilege")}
 		if kind != "catalog" {
 			for _, v := range d.Get("namespace").([]any) {
 				g.Namespace = append(g.Namespace, v.(string))
 			}
 		}
-		if kind == "table" {
-			g.Table = text(d, "table_name")
+		switch kind {
+		case "table":
+			g.Table = text(d, field)
+		case "view":
+			g.View = text(d, field)
+		case "policy":
+			g.Policy = text(d, field)
+		case "semantic_model":
+			g.Model = text(d, field)
 		}
 		return g
 	}
@@ -66,7 +95,7 @@ func grantResource(kind string) *schema.Resource {
 				return diag.Errorf("invalid Polaris grants response: grants must be an array")
 			}
 			for _, g := range result.Grants {
-				if g.Type == "" || g.Privilege == "" || ((g.Type == "namespace" || g.Type == "table") && g.Namespace == nil) || (g.Type == "table" && g.Table == "") {
+				if g.Type == "" || g.Privilege == "" || (g.Type != "catalog" && g.Namespace == nil) || (g.Type == apiKind && field != "" && objectName(g) == "") {
 					return diag.Errorf("invalid Polaris grant response: required fields are missing")
 				}
 			}
@@ -112,7 +141,7 @@ func grantResource(kind string) *schema.Resource {
 		if err := json.Unmarshal([]byte(d.Id()), &id); err != nil {
 			return nil, fmt.Errorf("grant import ID must contain catalog, catalog_role and grant")
 		}
-		if id.Catalog == "" || id.Role == "" || id.Grant.Type != kind || id.Grant.Privilege == "" || (kind != "catalog" && len(id.Grant.Namespace) == 0) || (kind == "table" && id.Grant.Table == "") {
+		if id.Catalog == "" || id.Role == "" || id.Grant.Type != apiKind || id.Grant.Privilege == "" || (kind != "catalog" && len(id.Grant.Namespace) == 0) || (field != "" && objectName(id.Grant) == "") {
 			return nil, fmt.Errorf("grant import ID does not match this resource scope")
 		}
 		values := map[string]any{"catalog": id.Catalog, "catalog_role": id.Role, "privilege": id.Grant.Privilege}
@@ -129,22 +158,22 @@ func grantResource(kind string) *schema.Resource {
 				return nil, fmt.Errorf("grant import ID contains an invalid namespace component")
 			}
 		}
-		if kind == "catalog" && (len(id.Grant.Namespace) != 0 || id.Grant.Table != "") {
+		if kind == "catalog" && (len(id.Grant.Namespace) != 0 || id.Grant.Table != "" || id.Grant.View != "" || id.Grant.Policy != "" || id.Grant.Model != "") {
 			return nil, fmt.Errorf("catalog grant import ID contains a narrower scope")
 		}
-		if kind == "namespace" && id.Grant.Table != "" {
+		if kind == "namespace" && (id.Grant.Table != "" || id.Grant.View != "" || id.Grant.Policy != "" || id.Grant.Model != "") {
 			return nil, fmt.Errorf("namespace grant import ID contains a table")
 		}
-		if kind == "table" {
-			if _, errs := validName(id.Grant.Table, "table_name"); len(errs) > 0 {
+		if field != "" {
+			if _, errs := validName(objectName(id.Grant), field); len(errs) > 0 {
 				return nil, fmt.Errorf("grant import ID contains an invalid table name")
 			}
 		}
 		if kind != "catalog" {
 			values["namespace"] = id.Grant.Namespace
 		}
-		if kind == "table" {
-			values["table_name"] = id.Grant.Table
+		if field != "" {
+			values[field] = objectName(id.Grant)
 		}
 		for k, v := range values {
 			if err := d.Set(k, v); err != nil {

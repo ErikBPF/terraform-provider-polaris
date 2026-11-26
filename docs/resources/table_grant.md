@@ -31,7 +31,7 @@ resource "polaris_table_grant" "access" {
 - `catalog_role` (String) Catalog role receiving this privilege; direct identity grants are not supported.
 - `namespace` (List of String) Namespace path components; a literal dot remains part of its component.
 - `privilege` (String) Polaris 1.9 privilege at this scope.
-- `table_name` (String) Existing table name.
+- `table_name` (String) Existing object name.
 
 ### Read-Only
 

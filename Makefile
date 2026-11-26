@@ -18,3 +18,7 @@ docs:
 
 acceptance:
 	python3 scripts/acceptance.py
+
+# Explicit context is mandatory; this target never selects the ambient context.
+acceptance-minikube:
+	python3 scripts/minikube.py --context "$(KUBE_CONTEXT)" -- $(GO) test ./polaris -run TestAcc -count=1 -timeout=15m
