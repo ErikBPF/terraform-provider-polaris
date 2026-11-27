@@ -12,15 +12,16 @@ applies group-only policy and nested membership; this provider owns API lifecycl
 
 ## Install
 
-Intended Registry address: `ErikBPF/polaris`. **No Registry release exists yet.**
-IAM pins a published Git commit and builds a local filesystem mirror for
-`0.1.0-dev`; follow its bootstrap instructions before init. Do not assume a
-Registry version resolves before the first signed release.
+Registry address: [`ErikBPF/polaris`](https://registry.terraform.io/providers/ErikBPF/polaris).
+The first signed release is `0.1.0`. Confirm that version is available in Registry
+before replacing a development source-build pin. Verify its checksum signature
+against [the maintainer public key](docs/release-signing-key.asc), fingerprint
+`F3E389BAE314FA1CEE23C06E64588A337187C497`.
 
 ```hcl
 terraform {
   required_providers {
-    polaris = { source = "ErikBPF/polaris", version = "0.1.0-dev" }
+    polaris = { source = "ErikBPF/polaris", version = "0.1.0" }
   }
 }
 provider "polaris" {

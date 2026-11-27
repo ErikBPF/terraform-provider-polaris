@@ -12,7 +12,7 @@ authored against the tagged Apache Polaris Management and Catalog API specificat
 - Catalog specification SHA256: `648d356abf3bbfa5c3c308fd012df0aa7b5a7e46ebe01d46d60cc41bed096632`.
 - Runtime fixture: `docker.io/apache/polaris:1.9.0`.
 - Terraform protocol: **5**, through Plugin SDK v2, matching the LiteLLM pattern.
-- First owned version: `0.1.0-dev`; scaffold tags do not define owned releases.
+- First owned release: `0.1.0`; `0.1.0-dev` was the source-build version. Scaffold tags do not define owned releases.
 
 The public `baptistegh/polaris` 0.2.0 provider informed the initial compatibility
 assessment but its repository declares no license. Its code is not copied. The

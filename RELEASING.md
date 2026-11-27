@@ -1,22 +1,26 @@
 # Releasing
 
-Use this repository's own semantic versions. No version is published yet;
-`0.1.0-dev` is the source-build mirror version consumed by IAM.
+Use this repository's own semantic versions, starting with `0.1.0`.
+`0.1.0-dev` was the pre-release source-build mirror version consumed by IAM.
 
 ## One-time setup
 
-1. Register a maintainer-owned signing public key with Terraform Registry.
-2. Publish that public key under `docs/` and verify its fingerprint.
+1. Use the maintainer signing key already registered for the `ErikBPF` namespace.
+2. Verify [docs/release-signing-key.asc](docs/release-signing-key.asc) has fingerprint
+   `F3E389BAE314FA1CEE23C06E64588A337187C497`.
 3. Configure `GPG_PRIVATE_KEY`, `GPG_PASSPHRASE` and variable
    `RELEASE_SIGNING_KEY_FINGERPRINT` only in the protected `production-release`
    environment. Do not duplicate signing keys as repository secrets: those
    would be usable by jobs that do not pass the environment approval gate.
 4. Confirm the IaC-managed `production-release` environment requires ErikBPF
    approval and disables admin bypass. Its name alone does not create a gate.
-5. Connect `terraform-provider-polaris` to Registry after the first signed release.
+5. The provider registration is already created. Confirm each signed release is
+   indexed; resync through Registry settings if a release is not discovered.
 
-No signing key is generated, copied from another provider or configured by this
-change. Never commit private keys, credentials, state, plans or debug logs.
+The key is shared with the maintainer's other providers. Signing values are resolved
+from the existing encrypted store into the protected environment; no private key,
+passphrase, state, plan or debug log belongs in source. Keep prior public signing
+keys and immutable release assets available for existing consumers.
 
 ## Before tagging
 

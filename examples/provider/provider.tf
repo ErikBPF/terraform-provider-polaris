@@ -1,6 +1,6 @@
 terraform {
   required_providers {
-    polaris = { source = "ErikBPF/polaris", version = "0.1.0-dev" }
+    polaris = { source = "ErikBPF/polaris", version = "0.1.0" }
   }
 }
 provider "polaris" {
