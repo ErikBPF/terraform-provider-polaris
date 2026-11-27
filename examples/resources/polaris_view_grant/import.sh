@@ -1,0 +1,1 @@
+terraform import polaris_view_grant.example '{"catalog":"warehouse","catalog_role":"iam_analysts","grant":{"type":"view","privilege":"VIEW_READ_PROPERTIES","namespace":["sales"],"viewName":"chosen"}}'
