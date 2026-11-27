@@ -7,7 +7,7 @@
 Typed Terraform provider for Apache Polaris **1.9**. Manages catalog/storage,
 namespace, table/view creation and registration, generic tables, semantic models,
 policies/attachments, principals, roles, assignments and scoped grants.
-The separate [IAM repository](https://github.com/ErikBPF/terraform-polaris-iam)
+The [platform IAM repository](https://github.com/nstechhub/dataplatform-iam)
 applies group-only policy and nested membership; this provider owns API lifecycles.
 
 ## Install
